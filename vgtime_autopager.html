@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="html">
+    <style>
+        .btn-group {
+            position: fixed;
+            right: 30px;
+            top: 90px;
+            font-size: 0;
+            background: rgba(200, 200, 200, 0.5);
+            opacity: 0.6;
+            z-index: 2;
+        }
+
+        .btn-group a {
+            display: inline-block;
+            margin: 0;
+            padding: 5px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ddd;
+            text-decoration: none;
+            background: rgba(200, 200, 200, 0.5);
+        }
+
+        .btn-group a:hover {
+            opacity: 0.8;
+        }
+
+        .btn-group a:active {
+            opacity: 1;
+        }
+
+        .btn-group a.btn-loadNext {
+            background: rgba(4, 124, 210, 1);
+        }
+
+        .btn-group a.btn-loadAll {
+            background: rgba(0, 99, 169, 1);
+        }
+
+        .btn-group a.btn-loadStop {
+            display: none;
+            background: rgba(0, 75, 128, 1);
+        }
+    </style>
+    <div class="btn-group">
+        <a class="btn-loadNext" href="javascript:loadNextPage();">加载下一页</a>
+        <a class="btn-loadAll" href="javascript:loadNextPage(true);">加载余下页</a>
+        <a class="btn-loadStop" href="javascript:stopLoadPage();">停止</a>
+    </div>
+    <script>
+        $(function () {
+
+            /*====================================UI====================================*/
+            var btnGroup = $('.btn-group');
+            var btnLoadNext = $('.btn-loadNext');
+            var btnLoadAll = $('.btn-loadAll');
+            var btnLoadStop = $('.btn-loadStop');
+
+            function loading() {
+                btnLoadStop.show();
+                btnLoadNext.hide();
+                btnLoadAll.hide();
+            }
+
+            function loadDone() {
+                btnLoadStop.hide();
+                btnLoadAll.show();
+                btnLoadNext.show();
+            }
+
+            /*====================================pageLoader====================================*/
+            var isStop = false;
+
+            function stopLoadPage() {
+                isStop = true;
+            }
+
+            function getNextPageUrl() {
+                var url = '';
+                if (!$('article').size()) {
+                    return false;
+                }
+//                var aArr = $('.next_page a');
+//                aArr.each(function (a) {
+//                    if (this.innerHTML === '下一页') {
+//                        url = this.href;
+//                    }
+                  url = $(".next_page").last().attr("href");
+//                });
+                return url;
+            }
+
+//            function getNextPageUrlAcg() {
+//                var url = '';
+//                if (!$('.topicContent front_content').size()) {
+//                    return false;
+//                }
+//                var aArr = $('.topicContent front_content').last().find('.page_css a');
+//                aArr.each(function (a) {
+//                    if (this.innerHTML === '下一页') {
+//                        url = this.href;
+//                    }
+//                });
+//                return url;
+//            }
+//
+//            function getNextPageUrlReview() {
+//                var url = '';
+//                if (!$('.topicContent front_content').size()) {
+//                    return false;
+//                }
+//                var aArr = $('.topicContent front_content').last().find('.page_css a');
+//                aArr.each(function (a) {
+//                    if (this.innerHTML === '下一页') {
+//                        url = this.href;
+//                    }
+//                });
+//                return url;
+//            }
+
+
+            function requestPage(url, callback) {
+                if(location.protocol=='https:')
+                    url=url.replace('http:','https:');
+                $.ajax({
+                    url: url,
+                    dataType: 'html',
+                    success: callback
+                })
+            }
+
+            function renderPage(jqDom) {
+                var page = jqDom.find('.main_cent');
+                if (!page.size()) {
+                    var content = jqDom.find('article');
+					var pbox    = jqDom.find('.article_page_box');
+                } else {
+                    var content = page.find('article');
+					var pbox    = page.find('.article_page_box');
+                }
+                if (page && content.find('.next_page').length < 1) {
+                    content.append(page.find('.next_page'));
+                }
+                $('.article_page_box').last().after(content);
+				$('article').last().after(pbox);
+                //fixVideoScript(jqDom, content);
+                removeRepeatElements('div.Relevant');
+                removeRepeatElements('div.fenxiang');
+                removeRepeatElements('div.Content_Paging');
+                removeRepeatElements('div.gs_ccs_solve');
+                loadImg('img[src*="blank.png"]');
+
+            }
+
+//            function fixVideoScript(jqDom, content) {
+//                for (let i = 0; i < jqDom.length; i++) {
+//                    let el = jqDom[i];
+//                    if (el.nodeName == 'SCRIPT' && el.src.indexOf('gsVideo.js') > -1 && jqDom[i + 1].nodeName == 'SCRIPT' && !jqDom[i + 1].src) {
+//                        let script = jqDom[i + 1];
+//                        if (window.evjs) {
+//                            addVideoScript(window.evjs, content, script);
+//                        } else {
+//                            $.get(el.src, function (r) {
+//                                addVideoScript(r, content, script);
+//                            })
+//                        }
+//                    }
+//                }
+//
+//                function addVideoScript(r, content, script) {
+//                    var js = r.replace(/document.write\(([^)]+?)\)/g, 'return $1');
+//                    window.evjs = js;
+//                    eval(js);
+//                    var embed = eval(script.innerHTML)
+//                    content.find('p[align=center]').append(embed);
+//                }
+//            }
+
+//            function renderPageAcg(jqDom) {
+//                var content = jqDom.find('.topicContent front_content');
+//                if (!content.size()) return false;
+//                $('.topicContent front_content').last().after(content);
+//                loadImg('img[src*="blank.png"]');
+//
+//            }
+//
+//            function renderPageReview(jqDom) {
+//                var content = jqDom.find('.topicContent front_content');
+//                if (!content.size()) return false;
+//                $('.topicContent front_content').last().after(content);
+//                loadImg('img[src*="blank.png"]');
+//
+//            }
+
+
+            function removeRepeatElements(selector) {
+                var eles = $(selector);
+                for (var i = 0; i < eles.length; i++) {
+                    var ele = eles[i];
+                    if (i != eles.length - 1) {
+                        $(ele).remove();
+                    }
+                }
+            }
+
+            function loadImg(selector) {
+                var eles = $(selector);
+                for (var i = 0; i < eles.length; i++) {
+                    var ele = $(eles[i]);
+                    ele.attr({src: ele.attr('data-src')});
+                }
+            }
+
+            function loadNextPage(isLoadAll) {
+				//debugger;
+                //判断是否停止
+                if (isStop) {
+                    isStop = false;
+                    loadDone();
+                    return;
+                }
+                loading();
+                // var url = getNextPageUrl() || getNextPageUrlAcg() || getNextPageUrlReview();
+				var url = getNextPageUrl();
+                //全部加载完成
+                if (!url) {
+                    loadDone();
+                    return;
+                }
+                requestPage(url, function (domStr, msg) {
+                    if (msg === 'success') {
+                        //判断是否停止
+                        if (isStop) {
+                            isStop = false;
+                            loadDone();
+                            return;
+                        }
+                        //渲染页面
+                        //renderPage($(domStr)) || renderPageAcg($(domStr)) || renderPageReview($(domStr));
+                        renderPage($(domStr));
+                        //判断是否加载全部
+                        isLoadAll && loadNextPage(true);
+                        //单个加载完成
+                        !isLoadAll && loadDone();
+                    }
+                });
+            }
+
+            window.stopLoadPage = stopLoadPage;
+            window.loadNextPage = loadNextPage;
+        })
+
+    </script>
+</div>
+</body>
+</html>
