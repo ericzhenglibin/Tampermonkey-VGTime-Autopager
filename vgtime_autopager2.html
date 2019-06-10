@@ -33,7 +33,7 @@
         }
 
         .btn-group a:active {
-            opacity: 1;
+            opacity: 1;  
         }
 
         .btn-group a.btn-loadNext {
@@ -148,8 +148,8 @@
                 if (page && content.find('.next_page').length < 1) {
                     content.append(page.find('.next_page'));
                 }
-                $('.article_page_box').last().after(content);
-				$('article').last().after(pbox);
+//                $('.article_page_box').last().after(content);
+		$('article').last().after(pbox);
                 //fixVideoScript(jqDom, content);
                 removeRepeatElements('div.Relevant');
                 removeRepeatElements('div.fenxiang');
