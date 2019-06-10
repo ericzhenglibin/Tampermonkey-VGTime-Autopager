@@ -139,11 +139,11 @@
             function renderPage(jqDom) {
                 var page = jqDom.find('.main_cent');
                 if (!page.size()) {
-                    var content = jqDom.find('article');
-					var pbox    = jqDom.find('.article_page_box');
+                    var content = jqDom.find('.topicContent');
+		    var pbox    = jqDom.find('.article_page_box');
                 } else {
-                    var content = page.find('article');
-					var pbox    = page.find('.article_page_box');
+                    var content = page.find('.topicContent');
+		    var pbox    = page.find('.article_page_box');
                 }
                 if (page && content.find('.next_page').length < 1) {
                     content.append(page.find('.next_page'));
